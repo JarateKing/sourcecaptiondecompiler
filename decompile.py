@@ -38,3 +38,14 @@ with open('./' + to_open + '.dat', "rb") as data, open('./' + to_open + '.dat', 
         datacopy.seek(dataoffset + blocknum * blocksize + oldOffset)
         text = datacopy.read(written).decode('utf-16-le')[:-1]
         labels[label] = text
+    
+    # write file
+    file.write('"lang"\n')
+    file.write('{\n')
+    file.write('\t"Language" "english"\n')
+    file.write('\t"Tokens"\n')
+    file.write('\t{\n')
+    for label, text in labels.items():
+        file.write('\t\t"{0}" "{1}"\n'.format(label, text))
+    file.write('\t}\n')
+    file.write('}\n')
