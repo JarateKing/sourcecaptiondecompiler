@@ -1,0 +1,10 @@
+Color.Scout
+Color.Soldier
+Color.Pyro
+Color.Demoman
+Color.Heavy
+Color.Engineer
+Color.Medic
+Color.Sniper
+Color.Spy
+Color.Announcer
