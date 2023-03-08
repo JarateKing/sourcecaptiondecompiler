@@ -17,7 +17,7 @@ for soundlist in soundlists:
 
 # decompile file
 to_open = 'closecaption_english'
-with open('./' + to_open + '.dat', "rb") as data, open('./' + to_open + '.dat', "rb") as datacopy, open("./closecaption_english.txt", "w", encoding='utf16') as file:
+with open('./' + to_open + '.dat', "rb") as data, open('./' + to_open + '.dat', "rb") as datacopy, open('./' + to_open + '_decompiled.txt', "w", encoding='utf16') as file:
     labels = {}
     
     # parse file
