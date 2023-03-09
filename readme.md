@@ -7,6 +7,8 @@ This is a simple utility to decompile captions `.dat` files in the Source engine
 1. Place `closecaption_english.dat` (the file you want to decompile) alongside `decompile.py`
 2. Run `python decompile.py`
 
+Note: if two different caption names end up sharing the same crc32 hash, `decompile.py` will report that there's been a collision. However, the program will continue regardless -- the decompiled names just may not reflect their contents in the case of a collision.
+
 ## How it works
 
 The format of compiled captions files looks something like:
