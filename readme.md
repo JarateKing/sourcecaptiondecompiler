@@ -12,6 +12,7 @@ There are also some optional commandline arguments that can be used:
 - `-i filename` determines the compiled source caption .dat file. If unspecified, this will be `closecaption_english.dat`.
 - `-o filename` determines the target output decompiled caption .txt file. If unspecified, this will be `closecaption_decompiled.txt`.
 - `-l filename1 filename2...` determines the caption names lists to use. If unspecified, this will default to `./lists/tf2.txt ./lists/commentary.txt ./lists/common_cc_emit.txt`.
+- `--nohashsuffix` if used, will skip calculating the hash suffix for missing labels. This option is much faster when missing labels are encountered, but means that recompiling the decompiled file won't work for those missing labels.
 
 Note: if two different caption names end up sharing the same crc32 hash, `decompile.py` will report that there's been a collision. However, the program will continue regardless -- the decompiled names just may not reflect their contents in the case of a collision.
 
