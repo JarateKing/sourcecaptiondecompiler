@@ -118,7 +118,7 @@ def GenerateSoundmap(soundlists):
                     soundmap[crc] = line
     return soundmap
 
-def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting, isVerbose):
+def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting, isVerbose, shouldUpdateProgress):
     with open('./' + to_open, "rb") as data, open('./' + to_open, "rb") as datacopy:
         labels = {}
         
@@ -135,9 +135,12 @@ def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting, isVer
             print('version data: {0}'.format(version))
             print('blocks count: {0}'.format(numblocks))
             print('block length: {0}'.format(blocksize))
-            print('directory size: {0}'.format(directorysize))
-            print('data offset: {0}'.format(dataoffset))
+            print('captions num: {0}'.format(directorysize))
+            print('block offset: {0}'.format(dataoffset))
             print(flush=True)
+        
+        if shouldUpdateProgress:
+            print('progress: 0/{0}'.format(directorysize), flush=True)
         
         for i in range(directorysize):
             crc = int.from_bytes(data.read(4), byteorder='little')
@@ -168,6 +171,9 @@ def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting, isVer
             
             if isVerbose:
                 print('at offset {0} in block {1} with length {2}: "{3}"'.format(oldOffset, blocknum, written, text), flush=True)
+            
+            if shouldUpdateProgress:
+                print('progress: {0}/{1}'.format(i + 1, directorysize), flush=True)
         
         # form file
         output = ''
@@ -201,19 +207,23 @@ def main():
     parser.add_argument('--stdout', action='store_true')
     parser.add_argument('--raw', action='store_true')
     parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('-p', '--progress', action='store_true')
     
     args = parser.parse_args()
     
     filename = args.filename if args.filename else args.infile
     
     soundmap = GenerateSoundmap(args.lists)
-    data = DecompileFile(filename, soundmap, args.nohashsuffix, args.raw, args.verbose)
+    data = DecompileFile(filename, soundmap, args.nohashsuffix, args.raw, args.verbose, args.progress)
     
     if args.stdout:
         print(data)
     else:
         with open(args.outfile, "w") as file:
             file.write(data)
+    
+    if args.progress:
+        print('done!')
 
 if __name__ == "__main__":
     main()
