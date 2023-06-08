@@ -166,6 +166,7 @@ def main():
         prog='Source Caption Decompiler',
         description='Decompiles source caption .dat files')
     
+    parser.add_argument('filename', nargs='?')
     parser.add_argument('-i', '--infile', nargs='?', default='closecaption_english.dat')
     parser.add_argument('-o', '--outfile', nargs='?', default='closecaption_decompiled.txt')
     parser.add_argument('-l', '--lists', nargs='+', default=['./lists/tf2.txt', './lists/commentary.txt', './lists/common_cc_emit.txt'])
@@ -173,8 +174,10 @@ def main():
     
     args = parser.parse_args()
     
+    filename = args.filename if args.filename else args.infile
+    
     soundmap = GenerateSoundmap(args.lists)
-    DecompileFile(args.infile, args.outfile, soundmap, args.nohashsuffix)
+    DecompileFile(filename, args.outfile, soundmap, args.nohashsuffix)
 
 if __name__ == "__main__":
     main()
