@@ -1,4 +1,4 @@
-import sys, os, binascii, itertools, zlib
+import sys, os, binascii, itertools, argparse
 
 class Crc32Collider:
     # adapted from https://www.nayuki.io/page/forcing-a-files-crc-to-any-value
@@ -159,8 +159,17 @@ def DecompileFile(to_open, to_output, soundmap):
         file.write('}\n')
 
 def main():
-    soundmap = GenerateSoundmap(['./lists/tf2.txt', './lists/commentary.txt', './lists/common_cc_emit.txt'])
-    DecompileFile('closecaption_english.dat', 'closecaption_english_decompiled.txt', soundmap)
+    parser = argparse.ArgumentParser(
+        prog='Source Caption Decompiler',
+        description='Decompiles source caption .dat files')
+    
+    parser.add_argument('-i', '--infile', nargs='?', default='closecaption_english.dat')
+    parser.add_argument('-o', '--outfile', nargs='?', default='closecaption_decompiled.txt')
+    parser.add_argument('-l', '--lists', nargs='+', default=['./lists/tf2.txt', './lists/commentary.txt', './lists/common_cc_emit.txt'])
+    args = parser.parse_args()
+    
+    soundmap = GenerateSoundmap(args.lists)
+    DecompileFile(args.infile, args.outfile, soundmap)
 
 if __name__ == "__main__":
     main()
