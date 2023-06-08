@@ -13,6 +13,10 @@ There are also some optional commandline arguments that can be used:
 - `-o filename` determines the target output decompiled caption .txt file. If unspecified, this will be `closecaption_decompiled.txt`.
 - `-l filename1 filename2...` determines the caption names lists to use. If unspecified, this will default to `./lists/tf2.txt ./lists/commentary.txt ./lists/common_cc_emit.txt`.
 - `--nohashsuffix` if used, will skip calculating the hash suffix for missing labels. This option is much faster when missing labels are encountered, but means that recompiling the decompiled file won't work for those missing labels.
+- `--stdout` will print the decompiled file into stdout instead of writing a file.
+- `--raw` will ignore proper formatting for decompiled captions files and will only print each label and the caption associated with it.
+- `-v` or `--verbose` will print out information associated with the decompilation process, intended for use with debugging or interpreting the data of the compiled file.
+- `-p` or `--progress` will print the current progress of the decompilation process.
 
 Note: if two different caption names end up sharing the same crc32 hash, `decompile.py` will report that there's been a collision. However, the program will continue regardless -- the decompiled names just may not reflect their contents in the case of a collision.
 
