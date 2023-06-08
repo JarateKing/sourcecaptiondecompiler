@@ -118,7 +118,7 @@ def GenerateSoundmap(soundlists):
                     soundmap[crc] = line
     return soundmap
 
-def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting):
+def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting, isVerbose):
     with open('./' + to_open, "rb") as data, open('./' + to_open, "rb") as datacopy:
         labels = {}
         
@@ -130,6 +130,15 @@ def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting):
         directorysize = int.from_bytes(data.read(4), byteorder='little')
         dataoffset = int.from_bytes(data.read(4), byteorder='little')
         
+        if isVerbose:
+            print('magic string: {0}'.format(magic))
+            print('version data: {0}'.format(version))
+            print('blocks count: {0}'.format(numblocks))
+            print('block length: {0}'.format(blocksize))
+            print('directory size: {0}'.format(directorysize))
+            print('data offset: {0}'.format(dataoffset))
+            print(flush=True)
+        
         for i in range(directorysize):
             crc = int.from_bytes(data.read(4), byteorder='little')
             blocknum = int.from_bytes(data.read(4), byteorder='little')
@@ -139,16 +148,26 @@ def DecompileFile(to_open, soundmap, skipHashSuffix, shouldSkipFormatting):
             label = ''
             if crc in soundmap:
                 label = soundmap[crc]
+                
+                if isVerbose:
+                    hexcrc = '{:08x}'.format(crc)
+                    print('found crc {0}: {1}'.format(hexcrc, label), flush=True)
             else:
                 if skipHashSuffix:
                     label = 'U.{:08x}'.format(crc)
                 else:
                     label = 'U.{:08x}.'.format(crc)
                     label = label + Crc32Collider.GenerateAsciiCollisionSuffix(label, crc)
+                if isVerbose:
+                    hexcrc = '{:08x}'.format(crc)
+                    print('failed to find crc {0}, fallback set to {1}'.format(hexcrc, label), flush=True)
             
             datacopy.seek(dataoffset + blocknum * blocksize + oldOffset)
             text = datacopy.read(written).decode('utf-16-le')[:-1]
             labels[label] = text
+            
+            if isVerbose:
+                print('at offset {0} in block {1} with length {2}: "{3}"'.format(oldOffset, blocknum, written, text), flush=True)
         
         # form file
         output = ''
@@ -181,13 +200,14 @@ def main():
     parser.add_argument('--nohashsuffix', action='store_true')
     parser.add_argument('--stdout', action='store_true')
     parser.add_argument('--raw', action='store_true')
+    parser.add_argument('-v', '--verbose', action='store_true')
     
     args = parser.parse_args()
     
     filename = args.filename if args.filename else args.infile
     
     soundmap = GenerateSoundmap(args.lists)
-    data = DecompileFile(filename, soundmap, args.nohashsuffix, args.raw)
+    data = DecompileFile(filename, soundmap, args.nohashsuffix, args.raw, args.verbose)
     
     if args.stdout:
         print(data)
