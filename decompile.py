@@ -118,7 +118,7 @@ def GenerateSoundmap(soundlists):
                     soundmap[crc] = line
     return soundmap
 
-def DecompileFile(to_open, to_output, soundmap):
+def DecompileFile(to_open, to_output, soundmap, skipHashSuffix):
     with open('./' + to_open, "rb") as data, open('./' + to_open, "rb") as datacopy, open('./' + to_output, "w", encoding='utf16') as file:
         labels = {}
         
@@ -140,8 +140,11 @@ def DecompileFile(to_open, to_output, soundmap):
             if crc in soundmap:
                 label = soundmap[crc]
             else:
-                label = 'U.{:08x}.'.format(crc)
-                label = label + Crc32Collider.GenerateAsciiCollisionSuffix(label, crc)
+                if skipHashSuffix:
+                    label = 'U.{:08x}'.format(crc)
+                else:
+                    label = 'U.{:08x}.'.format(crc)
+                    label = label + Crc32Collider.GenerateAsciiCollisionSuffix(label, crc)
             
             datacopy.seek(dataoffset + blocknum * blocksize + oldOffset)
             text = datacopy.read(written).decode('utf-16-le')[:-1]
@@ -166,10 +169,12 @@ def main():
     parser.add_argument('-i', '--infile', nargs='?', default='closecaption_english.dat')
     parser.add_argument('-o', '--outfile', nargs='?', default='closecaption_decompiled.txt')
     parser.add_argument('-l', '--lists', nargs='+', default=['./lists/tf2.txt', './lists/commentary.txt', './lists/common_cc_emit.txt'])
+    parser.add_argument('--nohashsuffix', action='store_true')
+    
     args = parser.parse_args()
     
     soundmap = GenerateSoundmap(args.lists)
-    DecompileFile(args.infile, args.outfile, soundmap)
+    DecompileFile(args.infile, args.outfile, soundmap, args.nohashsuffix)
 
 if __name__ == "__main__":
     main()
