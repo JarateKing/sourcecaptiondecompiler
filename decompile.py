@@ -118,8 +118,8 @@ def GenerateSoundmap(soundlists):
                     soundmap[crc] = line
     return soundmap
 
-def DecompileFile(to_open, to_output, soundmap, skipHashSuffix):
-    with open('./' + to_open, "rb") as data, open('./' + to_open, "rb") as datacopy, open('./' + to_output, "w", encoding='utf16') as file:
+def DecompileFile(to_open, soundmap, skipHashSuffix):
+    with open('./' + to_open, "rb") as data, open('./' + to_open, "rb") as datacopy:
         labels = {}
         
         # parse file
@@ -150,16 +150,20 @@ def DecompileFile(to_open, to_output, soundmap, skipHashSuffix):
             text = datacopy.read(written).decode('utf-16-le')[:-1]
             labels[label] = text
         
-        # write file
-        file.write('"lang"\n')
-        file.write('{\n')
-        file.write('\t"Language" "english"\n')
-        file.write('\t"Tokens"\n')
-        file.write('\t{\n')
+        # form file
+        output = ''
+        
+        output += '"lang"\n'
+        output += '{\n'
+        output += '\t"Language" "english"\n'
+        output += '\t"Tokens"\n'
+        output += '\t{\n'
         for label, text in labels.items():
-            file.write('\t\t"{0}" "{1}"\n'.format(label, text))
-        file.write('\t}\n')
-        file.write('}\n')
+            output += '\t\t"{0}" "{1}"\n'.format(label, text)
+        output += '\t}\n'
+        output += '}\n'
+        
+        return output
 
 def main():
     parser = argparse.ArgumentParser(
@@ -171,13 +175,20 @@ def main():
     parser.add_argument('-o', '--outfile', nargs='?', default='closecaption_decompiled.txt')
     parser.add_argument('-l', '--lists', nargs='+', default=['./lists/tf2.txt', './lists/commentary.txt', './lists/common_cc_emit.txt'])
     parser.add_argument('--nohashsuffix', action='store_true')
+    parser.add_argument('--stdout', action='store_true')
     
     args = parser.parse_args()
     
     filename = args.filename if args.filename else args.infile
     
     soundmap = GenerateSoundmap(args.lists)
-    DecompileFile(filename, args.outfile, soundmap, args.nohashsuffix)
+    data = DecompileFile(filename, soundmap, args.nohashsuffix)
+    
+    if args.stdout:
+        print(data)
+    else:
+        with open(args.outfile, "w") as file:
+            file.write(data)
 
 if __name__ == "__main__":
     main()
