@@ -1,11 +1,11 @@
 # Source Caption Decompiler
 
-This is a simple utility to decompile captions `.dat` files in the Source engine.
+This is a simple utility to decompile caption `.dat` files in the Source engine.
 
 ## Usage
 
-1. Place `closecaption_english.dat` (the file you want to decompile) alongside `decompile.py`
-2. Run `python decompile.py`
+1. Place `closecaption_languagename.dat` (the file you want to decompile) alongside `decompile.py`
+2. Run `python decompile.py closecaption_languagename.dat`
 
 There are also some optional commandline arguments that can be used:
 
